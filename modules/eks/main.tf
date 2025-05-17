@@ -1,6 +1,6 @@
 resource "aws_eks_cluster" "main" {
   name = var.cluster_name
-  role_arn = arn:aws:iam::877773779009:role/LabRole        # This role hardcoded here because of the restricted AWS Temporery (sandbox) enviroment
+  role_arn = "arn:aws:iam::877773779009:role/LabRole"        # This role hardcoded here because of the restricted AWS Temporery (sandbox) enviroment
   version  = var.cluster_version
 
   access_config {
@@ -49,7 +49,7 @@ resource "aws_eks_node_group" "main" {
   for_each        = var.node_groups
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = each.key
-  node_role_arn   =  arn:aws:iam::877773779009:role/LabRole     # This role hardcoded here because of the restricted AWS Temporery (sandbox) enviroment
+  node_role_arn   = "arn:aws:iam::877773779009:role/LabRole"    # This role hardcoded here because of the restricted AWS Temporery (sandbox) enviroment
   subnet_ids      = var.subnet_ids
 
   scaling_config {
