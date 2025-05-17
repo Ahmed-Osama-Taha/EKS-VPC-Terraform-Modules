@@ -1,6 +1,6 @@
 resource "aws_eks_cluster" "main" {
   name = var.cluster_name
-  role_arn = aws_iam_role.cluster.arn
+  role_arn = arn:aws:iam::877773779009:role/LabRole        # This role hardcoded here because of the restricted AWS Temporery (sandbox) enviroment
   version  = var.cluster_version
 
   access_config {
@@ -16,12 +16,12 @@ resource "aws_eks_cluster" "main" {
   # Ensure that IAM Role permissions are created before and deleted
   # after EKS Cluster handling. Otherwise, EKS will not be able to
   # properly delete EKS managed EC2 infrastructure such as Security Groups.
-  depends_on = [
+ /* depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
-  ]
+  ] */
 }
 
-resource "aws_iam_role" "cluster" {
+/*resource "aws_iam_role" "cluster" {
   name = "${var.cluster_name}-cluster-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -38,18 +38,18 @@ resource "aws_iam_role" "cluster" {
       },
     ]
   })
-}
+} */
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
+/*resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.cluster.name
-}
+}*/
 
 resource "aws_eks_node_group" "main" {
   for_each        = var.node_groups
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = each.key
-  node_role_arn   = aws_iam_role.node.arn
+  node_role_arn   =  arn:aws:iam::877773779009:role/LabRole     # This role hardcoded here because of the restricted AWS Temporery (sandbox) enviroment
   subnet_ids      = var.subnet_ids
 
   scaling_config {
@@ -64,10 +64,10 @@ resource "aws_eks_node_group" "main" {
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
   # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
-  depends_on = [aws_iam_role_policy_attachment.NodePolicies]
+# depends_on = [aws_iam_role_policy_attachment.NodePolicies]
 }
 
-resource "aws_iam_role" "node" {
+/*resource "aws_iam_role" "node" {
   name = "${var.cluster_name}-node-role"
 
   assume_role_policy = jsonencode({
@@ -80,9 +80,9 @@ resource "aws_iam_role" "node" {
     }]
     Version = "2012-10-17"
   })
-}
+}*/
 
-resource "aws_iam_role_policy_attachment" "NodePolicies" {
+/*resource "aws_iam_role_policy_attachment" "NodePolicies" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
@@ -90,7 +90,7 @@ resource "aws_iam_role_policy_attachment" "NodePolicies" {
   ])
   policy_arn = each.value
   role       = aws_iam_role.node.name
-}
+}*/
 
 
 
